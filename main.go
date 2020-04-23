@@ -4,30 +4,13 @@ import (
 	"fmt"
 )
 
-func addValue(foo []string) []string {
-	foo = append(foo, "c")
-	fmt.Println("add value", foo)
-	return foo
+func checkValue(s int) {
+	switch s {
+	case 0, 1:
+		fmt.Println("check valu is ", s)
+	}
 }
-func modify(foo []string) {
-	foo[1] = "c"
-	fmt.Println("modify foo", foo)
-}
-
 func main() {
-	foo := []string{"a", "b"}
-	fmt.Println("before foo:", foo)
-	addValue(foo)
-	fmt.Println("after foo:", foo)
-	bar := foo[:1]
-	fmt.Println(" bar:", bar)
-	s1 := append(bar, "c")
-	fmt.Println("foo:", foo)
-	fmt.Println("s1", s1)
-	s2 := append(bar, "d")
-	fmt.Println("foo:", foo)
-	fmt.Println("s2:", s2)
-	s3 := append(bar, "e", "f")
-	fmt.Println("foo:", foo)
-	fmt.Println("s3:", s3)
+	checkValue(0)
+	checkValue(1)
 }
