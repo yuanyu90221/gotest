@@ -2,66 +2,39 @@ package main
 
 import (
 	"fmt"
-	"strings"
-
-	_ "github.com/yuanyu90221/gotest/foo"
 )
 
-func getUserListSQL(username, email string) string {
-	sql := "select * from user"
-	where := []string{}
-	if username != "" {
-		where = append(where, fmt.Sprintf("username = '%s'", username))
-	}
-	if email != "" {
-		where = append(where, fmt.Sprintf("email = '%s'", email))
-	}
-
-	return sql + " where " + strings.Join(where, " or ")
+type errUserNameExist struct {
+	UserName string
 }
 
-func getUserListOptsSQL(opts searchOpts) string {
-	sql := "select * from user"
-	where := []string{}
-	if opts.username != "" {
-		where = append(where, fmt.Sprintf("username = '%s'", opts.username))
-	}
-	if opts.email != "" {
-		where = append(where, fmt.Sprintf("email = '%s'", opts.email))
-	}
-
-	if opts.sexy != 0 {
-		where = append(where, fmt.Sprintf("sexy = %d", opts.sexy))
-	}
-	return sql + " where " + strings.Join(where, " or ")
+func (e errUserNameExist) Error() string {
+	return fmt.Sprintf("username %s already exist", e.UserName)
 }
-
-type searchOpts struct {
-	username string
-	email    string
-	sexy     int
+func isErrUserNameExist(err error) bool {
+	_, ok := err.(errUserNameExist)
+	return ok
 }
-
+func checkUserNameExist(username string) (bool, error) {
+	if username == "bar" {
+		return true, errUserNameExist{UserName: username}
+	}
+	if username == "foo" {
+		return true, errUserNameExist{UserName: username}
+	}
+	return false, nil
+}
 func main() {
-	// foo := func() string {
-	// 	return "Hello World"
-	// }
-	// fmt.Println(foo())
-	// bar := func() {
-	// 	fmt.Println("Hello World 2")
-	// }
-	// bar()
-
-	// func() {
-	// 	fmt.Println("Hello World3")
-	// }()
-	fmt.Println(getUserListSQL("appleboy", ""))
-	fmt.Println(getUserListSQL("appleboy", "test@gmail.com"))
-	fmt.Println(getUserListOptsSQL(searchOpts{
-		username: "appleboy",
-		email:    "test@gmail.com",
-	}))
-	fmt.Println(getUserListOptsSQL(searchOpts{
-		sexy: 2,
-	}))
+	if _, err := checkUserNameExist("foo"); err != nil {
+		if isErrUserNameExist(err) {
+			fmt.Println(err)
+		}
+	}
+	if _, err := checkUserNameExist("bar"); err != nil {
+		if isErrUserNameExist(err) {
+			fmt.Println(err)
+		} else {
+			fmt.Println("isErrUserNameExist is false")
+		}
+	}
 }
